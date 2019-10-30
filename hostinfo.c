@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 
 #include "wdebug.h"
 
@@ -35,7 +36,11 @@ int main(int argc, char *argv[]) {
 
 	flags = NI_NUMERICHOST;	/*显示IP地址*/
 	for (rp=result; rp!=NULL;rp=rp->ai_next) {
-		getnameinfo(rp->ai_addr, rp->ai_addrlen, buf, BUFSIZE, NULL, 0, flags);
+		rc = getnameinfo(rp->ai_addr, rp->ai_addrlen, buf, BUFSIZE, NULL, 0, flags);
+		if (rc != 0) {
+			fprintf(stderr, "getnameinfo error:\t%s\n", gai_strerror(rc));
+			return -1;
+		}
 		printf("%s\t%s\n", argv[1], buf);
 	}
 
